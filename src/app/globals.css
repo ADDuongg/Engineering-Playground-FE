@@ -1,0 +1,136 @@
+@import "tailwindcss";
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* Colors — OKLCH from legacy tokens.css */
+  --color-background: oklch(14% 0.012 250);
+  --color-foreground: oklch(96% 0.005 250);
+  --color-surface: oklch(17% 0.012 250);
+  --color-surface-2: oklch(20% 0.012 250);
+  --color-surface-3: oklch(24% 0.012 250);
+  --color-muted: oklch(62% 0.012 250);
+  --color-muted-foreground: oklch(62% 0.012 250);
+  --color-border: oklch(26% 0.01 250);
+  --color-border-subtle: oklch(22% 0.008 250);
+  --color-accent: oklch(62% 0.18 255);
+  --color-accent-foreground: oklch(96% 0.005 250);
+  --color-success: oklch(72% 0.17 155);
+  --color-warning: oklch(78% 0.14 75);
+  --color-danger: oklch(63% 0.22 25);
+  --color-editor-bg: oklch(12% 0.01 250);
+
+  /* shadcn semantic bridge */
+  --color-card: oklch(17% 0.012 250);
+  --color-card-foreground: oklch(96% 0.005 250);
+  --color-popover: oklch(20% 0.012 250);
+  --color-popover-foreground: oklch(96% 0.005 250);
+  --color-primary: oklch(62% 0.18 255);
+  --color-primary-foreground: oklch(96% 0.005 250);
+  --color-secondary: oklch(20% 0.012 250);
+  --color-secondary-foreground: oklch(96% 0.005 250);
+  --color-destructive: oklch(63% 0.22 25);
+  --color-destructive-foreground: oklch(96% 0.005 250);
+  --color-input: oklch(26% 0.01 250);
+  --color-ring: oklch(62% 0.18 255);
+
+  /* Typography */
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace;
+
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-lg: 16px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 32px;
+  --text-4xl: 40px;
+  --text-5xl: 56px;
+
+  /* Spacing */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-24: 96px;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* Layout */
+  --sidebar-width: 240px;
+  --topbar-height: 48px;
+  --workspace-left-width: 280px;
+  --workspace-right-width: 360px;
+  --metrics-panel-max-height: 200px;
+
+  /* Shadows */
+  --shadow-1: 0 1px 2px oklch(0% 0 0 / 0.24);
+
+  /* Animation */
+  --animate-shimmer: shimmer 1.2s infinite;
+  --animate-count-up: count-up 0.3s ease;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    line-height: 1.5;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer utilities {
+  .font-mono-tabular {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .syntax-keyword { color: oklch(72% 0.14 280); }
+  .syntax-string { color: oklch(72% 0.12 155); }
+  .syntax-fn { color: oklch(78% 0.12 75); }
+  .syntax-comment { color: oklch(48% 0.01 250); }
+  .syntax-num { color: oklch(72% 0.14 55); }
+}
