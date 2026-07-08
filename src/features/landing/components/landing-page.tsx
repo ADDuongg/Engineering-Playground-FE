@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Zap, BarChart3, Monitor } from "lucide-react";
+import { LandingTracksSection } from "@/features/landing/components/landing-tracks-section";
 import { LABS_CATALOG } from "@/shared/constants/labs-catalog";
 import { ROUTES } from "@/shared/constants/routes";
 import { PublicNav } from "@/shared/components/layout/public-nav";
@@ -26,13 +27,6 @@ const FEATURES = [
     description:
       "Pre-loaded datasets at 100K, 1M, 10M rows. Docker-isolated. Reset anytime.",
   },
-];
-
-const ROADMAP = [
-  { num: "01", title: "Indexes & scans", desc: "B-tree, selectivity, composite" },
-  { num: "02", title: "Query planning", desc: "EXPLAIN, joins, costs" },
-  { num: "03", title: "Transactions", desc: "ACID, locks, deadlocks" },
-  { num: "04", title: "Caching & scale", desc: "Redis, batch, load test" },
 ];
 
 export function LandingPage() {
@@ -149,30 +143,8 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-        <h2 className="mb-10 text-2xl sm:text-3xl">Learning roadmap</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:hidden">
-          {ROADMAP.map((item) => (
-            <Card key={item.num}>
-              <div className="mb-2 font-mono text-xs text-accent">
-                {item.num}
-              </div>
-              <strong>{item.title}</strong>
-              <p className="mt-2 text-sm text-muted-foreground">{item.desc}</p>
-            </Card>
-          ))}
-        </div>
-        <div className="hidden gap-4 overflow-x-auto pb-4 lg:flex">
-          {ROADMAP.map((item) => (
-            <Card key={item.num} className="min-w-[200px] shrink-0">
-              <div className="mb-2 font-mono text-xs text-accent">
-                {item.num}
-              </div>
-              <strong>{item.title}</strong>
-              <p className="mt-2 text-sm text-muted-foreground">{item.desc}</p>
-            </Card>
-          ))}
-        </div>
+      <section id="tracks" className="border-t border-border">
+        <LandingTracksSection />
       </section>
 
       <section id="pricing" className="border-t border-border">
