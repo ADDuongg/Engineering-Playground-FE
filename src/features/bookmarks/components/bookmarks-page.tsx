@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ROUTES } from "@/shared/constants/routes";
-import { AppTopbar } from "@/shared/components/layout/app-topbar";
+import { AuthAppTopbar } from "@/features/auth/components/auth-app-topbar";
 import { Badge } from "@/shared/components/ui/badge";
 import { Card } from "@/shared/components/ui/card";
 
@@ -22,7 +22,7 @@ const BOOKMARKS = [
 export function BookmarksPage() {
   return (
     <>
-      <AppTopbar title="Bookmarks" />
+      <AuthAppTopbar title="Bookmarks" />
       <main className="flex-1 overflow-auto p-4 sm:p-6">
         {BOOKMARKS.length === 0 ? (
           <p className="text-muted-foreground">No bookmarks yet.</p>

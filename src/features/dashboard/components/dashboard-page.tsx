@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Zap } from "lucide-react";
 import { ROUTES } from "@/shared/constants/routes";
-import { AppTopbar } from "@/shared/components/layout/app-topbar";
+import { AuthAppTopbar } from "@/features/auth/components/auth-app-topbar";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
@@ -23,7 +23,7 @@ const RECENT = [
 export function DashboardPage() {
   return (
     <>
-      <AppTopbar title="Dashboard" badge="7-day streak" />
+      <AuthAppTopbar title="Dashboard" badge="7-day streak" />
       <main className="flex-1 overflow-auto p-4 sm:p-6">
         <Badge variant="accent" className="mb-4 sm:hidden">
           7-day streak

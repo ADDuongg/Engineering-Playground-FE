@@ -29,6 +29,7 @@ export const DASHBOARD_NAV: NavSection[] = [
       { label: "Dashboard", href: ROUTES.dashboard, icon: LayoutDashboard },
       { label: "Learning path", href: ROUTES.learning, icon: BookOpen },
       { label: "Lab browser", href: ROUTES.labs, icon: Database },
+      { label: "Benchmark", href: ROUTES.benchmark, icon: Gauge },
       { label: "Bookmarks", href: ROUTES.bookmarks, icon: Bookmark },
     ],
   },
@@ -43,8 +44,4 @@ export const DASHBOARD_NAV: NavSection[] = [
 
 export const BOTTOM_NAV: NavItem[] = [
   { label: "Settings", href: ROUTES.settings, icon: Settings },
-];
-
-export const WORKSPACE_NAV: NavItem[] = [
-  { label: "Benchmark", href: ROUTES.benchmark, icon: Gauge },
 ];

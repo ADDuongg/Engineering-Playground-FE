@@ -1,5 +1,5 @@
 import { Zap, Lock, Database, Gauge } from "lucide-react";
-import { AppTopbar } from "@/shared/components/layout/app-topbar";
+import { AuthAppTopbar } from "@/features/auth/components/auth-app-topbar";
 import { Card } from "@/shared/components/ui/card";
 
 const ACHIEVEMENTS = [
@@ -12,7 +12,7 @@ const ACHIEVEMENTS = [
 export function AchievementsPage() {
   return (
     <>
-      <AppTopbar title="Achievements" />
+      <AuthAppTopbar title="Achievements" />
       <main className="flex-1 overflow-auto p-4 sm:p-6">
         <p className="mb-6 text-muted-foreground">
           2 of 4 achievements unlocked

@@ -1,30 +1,49 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Github } from "lucide-react";
-import { loginSchema, type LoginFormValues } from "@/features/auth/schemas/login-schema";
+import { toast } from "sonner";
 import { ROUTES } from "@/shared/constants/routes";
+import { formatAuthErrorMessage } from "@/features/auth/utils/format-auth-error";
 import { Logo } from "@/shared/components/common/logo";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
+import { useLogin } from "@/features/auth/hooks/use-login";
+import { useRedirectIfAuthenticated } from "@/features/auth/hooks/use-redirect-if-authenticated";
+import {
+  loginSchema,
+  type LoginFormValues,
+} from "@/features/auth/schemas/login-schema";
 
 export function LoginForm() {
+  const router = useRouter();
+  const loginMutation = useLogin();
+  const { isHydrated, isAuthenticated } = useRedirectIfAuthenticated();
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = (_data: LoginFormValues) => {
-    // Service not implemented — navigate to dashboard for prototype
-    window.location.href = ROUTES.dashboard;
+  const onSubmit = async (data: LoginFormValues) => {
+    try {
+      await loginMutation.mutateAsync(data);
+      router.push(ROUTES.dashboard);
+    } catch (error) {
+      toast.error(formatAuthErrorMessage(error));
+    }
   };
+
+  if (!isHydrated || isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="grid min-h-dvh grid-cols-1 md:grid-cols-2">
@@ -50,25 +69,17 @@ export function LoginForm() {
         <h2 className="text-2xl font-semibold">Sign in</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           New here?{" "}
-          <Link href={ROUTES.login} className="text-accent">
+          <Link href={ROUTES.register} className="text-accent">
             Create account
           </Link>
         </p>
-        <Button variant="secondary" className="mt-6 w-full">
-          <Github className="h-4 w-4" />
-          Continue with GitHub
-        </Button>
-        <div className="my-6 flex items-center gap-4 text-sm text-muted-foreground">
-          <div className="h-px flex-1 bg-border" />
-          or
-          <div className="h-px flex-1 bg-border" />
-        </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
           <div>
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
               type="email"
+              autoComplete="email"
               placeholder="you@company.com"
               className="mt-2"
               {...register("email")}
@@ -82,6 +93,7 @@ export function LoginForm() {
             <Input
               id="password"
               type="password"
+              autoComplete="current-password"
               placeholder="••••••••"
               className="mt-2"
               {...register("password")}
@@ -92,8 +104,12 @@ export function LoginForm() {
               </p>
             )}
           </div>
-          <Button type="submit" className="w-full">
-            Sign in
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={isSubmitting || loginMutation.isPending}
+          >
+            {loginMutation.isPending ? "Signing in…" : "Sign in"}
           </Button>
         </form>
         <p className="mt-6 text-center text-xs text-muted-foreground">

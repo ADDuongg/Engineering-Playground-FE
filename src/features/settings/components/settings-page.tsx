@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { AppTopbar } from "@/shared/components/layout/app-topbar";
+import { AuthAppTopbar } from "@/features/auth/components/auth-app-topbar";
 import { Button } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
 import { Input } from "@/shared/components/ui/input";
@@ -39,7 +39,7 @@ export function SettingsPage() {
 
   return (
     <>
-      <AppTopbar title="Settings" />
+      <AuthAppTopbar title="Settings" />
       <main className="mx-auto max-w-2xl flex-1 overflow-auto p-4 sm:p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <Card>

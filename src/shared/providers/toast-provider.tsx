@@ -6,7 +6,7 @@ export function ToastProvider() {
   return (
     <Toaster
       theme="dark"
-      position="bottom-right"
+      position="top-center"
       toastOptions={{
         style: {
           background: "oklch(20% 0.012 250)",

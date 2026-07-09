@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { CompleteLabButton } from "@/features/progress-tracking/components/complete-lab-button";
 import { getLabCatalogItem } from "@/shared/constants/labs-catalog";
 import { ROUTES } from "@/shared/constants/routes";
-import { AppTopbar } from "@/shared/components/layout/app-topbar";
+import { AuthAppTopbar } from "@/features/auth/components/auth-app-topbar";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
@@ -10,6 +11,8 @@ import { Card } from "@/shared/components/ui/card";
 interface LabDetailPageProps {
   slug: string;
 }
+
+const DEFAULT_TRACK_SLUG = "database-sql";
 
 function difficultyVariant(d: string) {
   if (d === "beginner") return "success" as const;
@@ -23,7 +26,7 @@ export function LabDetailPage({ slug }: LabDetailPageProps) {
 
   return (
     <>
-      <AppTopbar title={lab.title} />
+      <AuthAppTopbar title={lab.title} />
       <main className="mx-auto max-w-3xl flex-1 overflow-auto p-4 sm:p-6">
         <div className="mb-6 flex flex-wrap gap-2">
           <Badge variant={difficultyVariant(lab.difficulty)}>
@@ -53,10 +56,18 @@ export function LabDetailPage({ slug }: LabDetailPageProps) {
           </p>
         </Card>
 
-        <div className="flex flex-col gap-3 sm:flex-row">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
           <Button size="lg" asChild className="w-full sm:w-auto">
             <Link href={ROUTES.labWorkspace(slug)}>Start lab</Link>
           </Button>
+          <Button variant="secondary" size="lg" asChild className="w-full sm:w-auto">
+            <Link href={ROUTES.quiz(slug)}>Take quiz</Link>
+          </Button>
+          <CompleteLabButton
+            labSlug={slug}
+            trackSlug={DEFAULT_TRACK_SLUG}
+            className="w-full sm:w-auto"
+          />
           <Button variant="secondary" size="lg" asChild className="w-full sm:w-auto">
             <Link href={ROUTES.labs}>Back to labs</Link>
           </Button>

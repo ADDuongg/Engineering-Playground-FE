@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { LABS_CATALOG } from "@/shared/constants/labs-catalog";
 import { ROUTES } from "@/shared/constants/routes";
-import { AppTopbar } from "@/shared/components/layout/app-topbar";
+import { AuthAppTopbar } from "@/features/auth/components/auth-app-topbar";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
@@ -32,7 +32,7 @@ export function LabsPage() {
 
   return (
     <>
-      <AppTopbar
+      <AuthAppTopbar
         title="Lab browser"
         actions={
           <Input

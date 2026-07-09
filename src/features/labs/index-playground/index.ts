@@ -34,5 +34,9 @@ registerLab(
       { id: "index", label: "Index Used", value: "No" },
     ],
     currentStep: "experiment",
+    dataset: {
+      family: "commerce",
+      tier: "100k",
+    },
   }),
 );

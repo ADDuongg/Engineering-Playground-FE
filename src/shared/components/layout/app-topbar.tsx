@@ -10,9 +10,10 @@ interface AppTopbarProps {
   title: string;
   badge?: string;
   actions?: React.ReactNode;
+  avatar?: React.ReactNode;
 }
 
-export function AppTopbar({ title, badge, actions }: AppTopbarProps) {
+export function AppTopbar({ title, badge, actions, avatar }: AppTopbarProps) {
   const toggleMobile = useSidebarStore((s) => s.toggleMobile);
 
   return (
@@ -40,9 +41,11 @@ export function AppTopbar({ title, badge, actions }: AppTopbarProps) {
             {badge}
           </Badge>
         )}
-        <Avatar className="h-8 w-8">
-          <AvatarFallback>DV</AvatarFallback>
-        </Avatar>
+        {avatar ?? (
+          <Avatar className="h-8 w-8">
+            <AvatarFallback>?</AvatarFallback>
+          </Avatar>
+        )}
       </div>
     </header>
   );

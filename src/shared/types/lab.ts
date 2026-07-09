@@ -20,6 +20,14 @@ export interface LabExercise {
   status: "pending" | "active" | "done";
 }
 
+export type DatasetTier = "100k" | "1m" | "10m";
+
+export interface LabDatasetConfig {
+  family: string;
+  tier: DatasetTier;
+  version?: string;
+}
+
 export interface LabDefinition {
   slug: string;
   title: string;
@@ -35,4 +43,5 @@ export interface LabDefinition {
   defaultQuery: string;
   metrics: LabMetric[];
   currentStep: LabStep;
+  dataset?: LabDatasetConfig;
 }

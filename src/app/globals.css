@@ -72,9 +72,11 @@
   /* Layout */
   --sidebar-width: 240px;
   --topbar-height: 48px;
-  --workspace-left-width: 280px;
+  --workspace-left-width: 320px;
   --workspace-right-width: 360px;
   --metrics-panel-max-height: 200px;
+  --analysis-panel-height: 220px;
+  --analysis-panel-max-height: 320px;
 
   /* Shadows */
   --shadow-1: 0 1px 2px oklch(0% 0 0 / 0.24);

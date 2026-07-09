@@ -1,4 +1,4 @@
-import { AppTopbar } from "@/shared/components/layout/app-topbar";
+import { AuthAppTopbar } from "@/features/auth/components/auth-app-topbar";
 import { Avatar, AvatarFallback } from "@/shared/components/ui/avatar";
 import { Badge } from "@/shared/components/ui/badge";
 import { Card } from "@/shared/components/ui/card";
@@ -7,7 +7,7 @@ import { Progress } from "@/shared/components/ui/progress";
 export function ProfilePage() {
   return (
     <>
-      <AppTopbar title="Profile" />
+      <AuthAppTopbar title="Profile" />
       <main className="mx-auto max-w-2xl flex-1 overflow-auto p-4 sm:p-6">
         <div className="mb-8 flex flex-wrap items-center gap-4">
           <Avatar className="h-16 w-16">

@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { ApiRequestError } from "@/shared/types/api";
 import { ROUTES } from "@/shared/constants/routes";
+import { formatAuthErrorMessage } from "@/features/auth/utils/format-auth-error";
 import { Logo } from "@/shared/components/common/logo";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
@@ -37,12 +37,7 @@ export function RegisterForm() {
       await registerMutation.mutateAsync(data);
       router.push(ROUTES.dashboard);
     } catch (error) {
-      if (error instanceof ApiRequestError) {
-        toast.error(error.message);
-        return;
-      }
-
-      toast.error("Unable to create account. Please try again.");
+      toast.error(formatAuthErrorMessage(error));
     }
   };
 

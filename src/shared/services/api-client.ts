@@ -18,6 +18,11 @@ export function initApiClient(nextHandlers: ApiClientHandlers) {
   handlers = nextHandlers;
 }
 
+/** Access token for non-envelope clients (e.g. SSE) that cannot use `apiRequest`. */
+export function getApiAccessToken(): string | null {
+  return handlers?.getAccessToken() ?? null;
+}
+
 interface ApiRequestOptions {
   path: string;
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";

@@ -1,13 +1,15 @@
 export const ROUTES = {
   home: "/",
   login: "/login",
+  register: "/register",
   dashboard: "/dashboard",
   learning: "/learning",
   labs: "/labs",
   labDetail: (slug: string) => `/labs/${slug}`,
   labWorkspace: (slug: string) => `/labs/${slug}/workspace`,
   benchmark: "/benchmark",
-  quiz: "/quiz",
+  quiz: (labSlug = "index-playground") =>
+    `/quiz?lab=${encodeURIComponent(labSlug)}`,
   achievements: "/achievements",
   bookmarks: "/bookmarks",
   profile: "/profile",

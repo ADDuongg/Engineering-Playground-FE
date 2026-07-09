@@ -1,10 +1,11 @@
-import { initApiClient } from "@/shared/services/api-client";
 import {
   getAccessToken,
   getRefreshToken,
   useAuthStore,
 } from "@/features/auth/lib/auth-store";
 import * as authService from "@/features/auth/services/auth-service";
+import { ROUTES } from "@/shared/constants/routes";
+import { initApiClient } from "@/shared/services/api-client";
 
 let initialized = false;
 
@@ -28,6 +29,15 @@ export function initAuthApiClient() {
     },
     onSessionExpired: () => {
       useAuthStore.getState().clearAuth();
+
+      if (typeof window === "undefined") {
+        return;
+      }
+
+      const path = window.location.pathname;
+      if (path !== ROUTES.login && path !== ROUTES.register) {
+        window.location.assign(ROUTES.login);
+      }
     },
   });
 }

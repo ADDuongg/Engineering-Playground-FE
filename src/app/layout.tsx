@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AuthProvider } from "@/features/auth/components/auth-provider";
 import { APP_NAME } from "@/shared/constants/routes";
 import { AppProviders } from "@/shared/providers/app-providers";
 import "./globals.css";
@@ -20,7 +21,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <AppProviders>{children}</AppProviders>
+        <AppProviders>
+          <AuthProvider>{children}</AuthProvider>
+        </AppProviders>
       </body>
     </html>
   );
