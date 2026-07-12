@@ -1,10 +1,13 @@
 import { z } from "zod";
 
+export const labStatusSchema = z.enum(["active", "coming-soon"]);
+
 export const labPathItemSchema = z.object({
   slug: z.string().min(1),
   title: z.string().min(1),
   description: z.string().nullable().optional(),
   sequenceOrder: z.number(),
+  status: labStatusSchema.default("active"),
 });
 
 export const trackLearningPathResponseSchema = z.object({

@@ -7,9 +7,13 @@ import { cn } from "@/shared/lib/utils";
 
 interface SidebarNavContentProps {
   onNavigate?: () => void;
+  extraNav?: React.ReactNode;
 }
 
-export function SidebarNavContent({ onNavigate }: SidebarNavContentProps) {
+export function SidebarNavContent({
+  onNavigate,
+  extraNav,
+}: SidebarNavContentProps) {
   const pathname = usePathname();
 
   return (
@@ -39,6 +43,8 @@ export function SidebarNavContent({ onNavigate }: SidebarNavContentProps) {
           })}
         </nav>
       ))}
+
+      {extraNav}
 
       <div className="mt-auto">
         {BOTTOM_NAV.map((item) => {

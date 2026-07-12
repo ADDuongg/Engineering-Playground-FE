@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CheckCircle2, Circle } from "lucide-react";
+import { CheckCircle2, Circle, Clock } from "lucide-react";
 import { formatProgressErrorMessage } from "@/features/progress-tracking/utils/format-progress-error";
 import type {
   LabPathItem,
@@ -12,6 +12,7 @@ import { EmptyState } from "@/shared/components/common/empty-state";
 import { Badge } from "@/shared/components/ui/badge";
 import { Progress } from "@/shared/components/ui/progress";
 import { Skeleton } from "@/shared/components/ui/skeleton";
+import { cn } from "@/shared/lib/utils";
 
 interface TrackLearningPathProps {
   labs: LabPathItem[];
@@ -91,22 +92,33 @@ export function TrackLearningPath({
       <div className="space-y-2">
         {labs.map((lab, index) => {
           const completed = isLabCompleted(lab.slug, progress);
+          const isComingSoon = lab.status === "coming-soon";
           const isNext =
+            !isComingSoon &&
             showProgress &&
             progress &&
             !completed &&
             labs
               .slice(0, index)
-              .every((prior) => isLabCompleted(prior.slug, progress));
+              .every(
+                (prior) =>
+                  prior.status === "coming-soon" ||
+                  isLabCompleted(prior.slug, progress),
+              );
 
-          return (
-            <Link
-              key={lab.slug}
-              href={ROUTES.labDetail(lab.slug)}
-              className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-md border border-border bg-surface p-4 transition-colors hover:border-accent"
-            >
+          const rowClassName = cn(
+            "flex flex-wrap items-center gap-x-3 gap-y-2 rounded-md border border-border bg-surface p-4 transition-colors",
+            isComingSoon
+              ? "opacity-75"
+              : "hover:border-accent",
+          );
+
+          const content = (
+            <>
               {completed ? (
                 <CheckCircle2 className="h-5 w-5 shrink-0 text-success" />
+              ) : isComingSoon ? (
+                <Clock className="h-5 w-5 shrink-0 text-muted-foreground" />
               ) : (
                 <Circle
                   className={`h-5 w-5 shrink-0 ${
@@ -125,8 +137,23 @@ export function TrackLearningPath({
                   </p>
                 ) : null}
               </div>
+              {isComingSoon && <Badge variant="muted">Coming soon</Badge>}
               {completed && <Badge variant="success">Completed</Badge>}
               {isNext && <Badge variant="accent">Up next</Badge>}
+            </>
+          );
+
+          if (isComingSoon) {
+            return (
+              <div key={lab.slug} className={rowClassName} aria-disabled>
+                {content}
+              </div>
+            );
+          }
+
+          return (
+            <Link key={lab.slug} href={ROUTES.labDetail(lab.slug)} className={rowClassName}>
+              {content}
             </Link>
           );
         })}

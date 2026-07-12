@@ -7,13 +7,16 @@ export function formatLabSummaryErrorMessage(error: unknown): string {
     }
 
     if (error.code === "NOT_FOUND") {
-      return error.message || "No lab summary is registered for this lab.";
+      return (
+        error.message ||
+        "No curriculum is registered for this lab yet."
+      );
     }
 
     if (error.code === "FORBIDDEN") {
       return (
         error.message ||
-        "This lab summary is unavailable because the track is not active."
+        "This lab summary is unavailable because the lab or track is not active."
       );
     }
 

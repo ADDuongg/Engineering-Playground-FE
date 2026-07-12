@@ -87,6 +87,8 @@ features/<name>/
 | `bookmarks` | Saved queries |
 | `profile` | User profile |
 | `settings` | User preferences |
+| `admin-authz` | Admin session probe + route guard |
+| `user-admin` | Admin user directory + role changes |
 
 **Rule:** Adding a new lab module only requires a new folder under `features/labs/<slug>/` and a registration call. No changes to `lab-engine` or routing.
 

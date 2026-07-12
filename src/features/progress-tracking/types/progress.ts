@@ -1,8 +1,11 @@
+export type LabStatus = "active" | "coming-soon";
+
 export interface LabPathItem {
   slug: string;
   title: string;
   description?: string | null;
   sequenceOrder: number;
+  status: LabStatus;
 }
 
 export interface TrackLearningPathResponse {

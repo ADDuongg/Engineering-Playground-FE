@@ -1,6 +1,13 @@
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+}
+
 export interface ApiMeta {
   timestamp: string;
   requestId?: string;
+  pagination?: PaginationMeta;
 }
 
 export interface ApiErrorBody {

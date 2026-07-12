@@ -3,6 +3,7 @@ import {
   ApiRequestError,
   type ApiEnvelope,
   type ApiErrorBody,
+  type ApiMeta,
 } from "@/shared/types/api";
 
 interface ApiClientHandlers {
@@ -64,70 +65,93 @@ async function attemptRefresh(): Promise<boolean> {
   return refreshPromise;
 }
 
-export async function apiRequest<T>({
-  path,
-  method = "GET",
-  body,
-  auth = true,
-  skipRefresh = false,
-}: ApiRequestOptions): Promise<T> {
-  const execute = async (isRetry: boolean): Promise<T> => {
-    const headers: Record<string, string> = {
-      Accept: "application/json",
-    };
+export interface ApiRequestResult<T> {
+  data: T;
+  meta: ApiMeta;
+}
 
-    if (body !== undefined) {
-      headers["Content-Type"] = "application/json";
-    }
+async function executeApiRequest<T>(
+  options: ApiRequestOptions,
+  isRetry = false,
+): Promise<ApiRequestResult<T>> {
+  const {
+    path,
+    method = "GET",
+    body,
+    auth = true,
+    skipRefresh = false,
+  } = options;
 
-    if (auth && handlers) {
-      const accessToken = handlers.getAccessToken();
-      if (accessToken) {
-        headers.Authorization = `Bearer ${accessToken}`;
-      }
-    }
-
-    const response = await fetch(`${API_BASE_URL}${path}`, {
-      method,
-      headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-    });
-
-    if (
-      response.status === 401 &&
-      auth &&
-      !skipRefresh &&
-      !isRetry &&
-      handlers
-    ) {
-      const refreshed = await attemptRefresh();
-      if (refreshed) {
-        return execute(true);
-      }
-
-      handlers.onSessionExpired();
-      throw await parseEnvelopeError(response);
-    }
-
-    if (!response.ok) {
-      throw await parseEnvelopeError(response);
-    }
-
-    const envelope = (await response.json()) as ApiEnvelope<T>;
-
-    if (!envelope.success || envelope.data === null) {
-      throw new ApiRequestError(
-        response.status,
-        envelope.error?.code ?? "UNKNOWN_ERROR",
-        envelope.error?.message ?? "Request failed",
-        envelope.error?.details,
-      );
-    }
-
-    return envelope.data;
+  const headers: Record<string, string> = {
+    Accept: "application/json",
   };
 
-  return execute(false);
+  if (body !== undefined) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  if (auth && handlers) {
+    const accessToken = handlers.getAccessToken();
+    if (accessToken) {
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
+  }
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    method,
+    headers,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  });
+
+  if (
+    response.status === 401 &&
+    auth &&
+    !skipRefresh &&
+    !isRetry &&
+    handlers
+  ) {
+    const refreshed = await attemptRefresh();
+    if (refreshed) {
+      return executeApiRequest<T>(options, true);
+    }
+
+    handlers.onSessionExpired();
+    throw await parseEnvelopeError(response);
+  }
+
+  if (!response.ok) {
+    throw await parseEnvelopeError(response);
+  }
+
+  const envelope = (await response.json()) as ApiEnvelope<T>;
+
+  if (!envelope.success || envelope.data === null) {
+    throw new ApiRequestError(
+      response.status,
+      envelope.error?.code ?? "UNKNOWN_ERROR",
+      envelope.error?.message ?? "Request failed",
+      envelope.error?.details,
+    );
+  }
+
+  return {
+    data: envelope.data,
+    meta: envelope.meta,
+  };
+}
+
+export async function apiRequest<T>(
+  options: ApiRequestOptions,
+): Promise<T> {
+  const result = await executeApiRequest<T>(options);
+  return result.data;
+}
+
+/** Like `apiRequest`, but also returns envelope `meta` (e.g. pagination). */
+export async function apiRequestWithMeta<T>(
+  options: ApiRequestOptions,
+): Promise<ApiRequestResult<T>> {
+  return executeApiRequest<T>(options);
 }
 
 export async function apiRequestNoContent({

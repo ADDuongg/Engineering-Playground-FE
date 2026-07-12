@@ -8,7 +8,11 @@ import { Button } from "@/shared/components/ui/button";
 import { useSidebarStore } from "@/shared/lib/stores/sidebar-store";
 import { SidebarNavContent } from "./sidebar-nav-content";
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  extraNav?: React.ReactNode;
+}
+
+export function AppSidebar({ extraNav }: AppSidebarProps) {
   const pathname = usePathname();
   const isMobileOpen = useSidebarStore((s) => s.isMobileOpen);
   const setMobileOpen = useSidebarStore((s) => s.setMobileOpen);
@@ -28,7 +32,7 @@ export function AppSidebar() {
     <>
       <aside className="hidden w-[var(--sidebar-width)] shrink-0 flex-col border-e border-border bg-surface p-4 md:flex">
         <Logo className="mb-6" />
-        <SidebarNavContent />
+        <SidebarNavContent extraNav={extraNav} />
       </aside>
 
       {isMobileOpen && (
@@ -51,7 +55,10 @@ export function AppSidebar() {
                 <X className="h-5 w-5" />
               </Button>
             </div>
-            <SidebarNavContent onNavigate={() => setMobileOpen(false)} />
+            <SidebarNavContent
+              extraNav={extraNav}
+              onNavigate={() => setMobileOpen(false)}
+            />
           </aside>
         </div>
       )}

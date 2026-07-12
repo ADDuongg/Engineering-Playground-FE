@@ -71,9 +71,7 @@ export function LabWorkspaceClient({ lab }: LabWorkspaceClientProps) {
   const queryClient = useQueryClient();
   const isIndexPlayground = lab.slug === INDEX_PLAYGROUND_SLUG;
 
-  const summaryQuery = useLabSummary(lab.slug, {
-    enabled: isIndexPlayground,
-  });
+  const summaryQuery = useLabSummary(lab.slug);
   const scanComparison = useScanComparison();
 
   const baseDataset = lab.dataset ?? DEFAULT_DATASET;
@@ -86,7 +84,7 @@ export function LabWorkspaceClient({ lab }: LabWorkspaceClientProps) {
   const appliedRecommendedQuery = useRef(false);
 
   useEffect(() => {
-    if (!isIndexPlayground || !summaryQuery.data) {
+    if (!summaryQuery.data) {
       return;
     }
 
@@ -107,7 +105,7 @@ export function LabWorkspaceClient({ lab }: LabWorkspaceClientProps) {
       setEditorSql(summaryQuery.data.recommendedQuery.sql);
       appliedRecommendedQuery.current = true;
     }
-  }, [editorSql, isIndexPlayground, lab, summaryQuery.data]);
+  }, [editorSql, lab, summaryQuery.data]);
 
   const datasetIdentity = useMemo(
     () => ({
@@ -436,16 +434,14 @@ export function LabWorkspaceClient({ lab }: LabWorkspaceClientProps) {
       query={editorSql}
       onQueryChange={setEditorSql}
       guidedSlot={
-        isIndexPlayground ? (
-          <GuidedStepsPanel
-            summary={summaryQuery.data}
-            isLoading={summaryQuery.isLoading}
-            error={summaryQuery.error}
-            onApplySql={setEditorSql}
-            onCaptureBefore={handleCaptureBefore}
-            onCaptureAfter={handleCaptureAfter}
-          />
-        ) : undefined
+        <GuidedStepsPanel
+          summary={summaryQuery.data}
+          isLoading={summaryQuery.isLoading}
+          error={summaryQuery.error}
+          onApplySql={setEditorSql}
+          onCaptureBefore={isIndexPlayground ? handleCaptureBefore : undefined}
+          onCaptureAfter={isIndexPlayground ? handleCaptureAfter : undefined}
+        />
       }
       comparisonSlot={
         isIndexPlayground ? (
