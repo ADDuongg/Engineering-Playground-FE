@@ -16,6 +16,16 @@ import type { AdminLabGuidedStepView } from "@/features/lab-flow-admin/types/lab
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 
+const REACT_GUIDED_ACTIONS = new Set([
+  "render_component",
+  "update_props",
+  "update_state",
+  "remount",
+  "toggle_memo",
+  "compare_reconciliation",
+  "inspect_hooks",
+]);
+
 function stepToFormValues(
   step?: AdminLabGuidedStepView,
   nextDisplayOrder = 1,
@@ -31,6 +41,7 @@ function stepToFormValues(
       payloadRecommendedDescription: "",
       payloadRecommendedExampleParameters: '["user1@example.com"]',
       payloadRecommendedParamHints: '["email"]',
+      payloadReactScenarioJson: '{\n  "scenarioId": ""\n}',
     };
   }
 
@@ -53,6 +64,9 @@ function stepToFormValues(
       null,
       2,
     ),
+    payloadReactScenarioJson: step.payload?.reactScenario
+      ? JSON.stringify(step.payload.reactScenario, null, 2)
+      : '{\n  "scenarioId": ""\n}',
   };
 }
 
@@ -90,6 +104,7 @@ export function GuidedStepForm({
     action === "run_explain_analyze";
   const showDdlSql =
     action === "create_index_sql" || action === "drop_index_sql";
+  const showReactScenario = REACT_GUIDED_ACTIONS.has(action);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -207,9 +222,24 @@ export function GuidedStepForm({
         </AdminFormField>
       ) : null}
 
-      {!showRecommendedQuery && !showDdlSql ? (
+      {showReactScenario ? (
+        <AdminFormField
+          label="React scenario (JSON)"
+          htmlFor="payloadReactScenarioJson"
+          error={errors.payloadReactScenarioJson?.message}
+          hint="Stored as payload.reactScenario"
+        >
+          <AdminTextarea
+            id="payloadReactScenarioJson"
+            className="min-h-40 font-mono text-xs"
+            {...register("payloadReactScenarioJson")}
+          />
+        </AdminFormField>
+      ) : null}
+
+      {!showRecommendedQuery && !showDdlSql && !showReactScenario ? (
         <p className="rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground">
-          This action has no Apply SQL payload (usually{" "}
+          This action has no Apply payload (usually{" "}
           <code className="font-mono">null</code>).
         </p>
       ) : null}

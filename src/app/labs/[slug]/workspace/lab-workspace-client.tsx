@@ -91,7 +91,7 @@ export function LabWorkspaceClient({ lab }: LabWorkspaceClientProps) {
     if (!tierInitializedFromSummary.current) {
       const nextTier = resolveInitialTier(
         lab,
-        summaryQuery.data.dataset.recommendedTier,
+        summaryQuery.data.dataset?.recommendedTier,
       );
       setSelectedTier(nextTier);
       tierInitializedFromSummary.current = true;
@@ -100,7 +100,7 @@ export function LabWorkspaceClient({ lab }: LabWorkspaceClientProps) {
     if (
       !appliedRecommendedQuery.current &&
       editorSql === lab.defaultQuery &&
-      summaryQuery.data.recommendedQuery.sql
+      summaryQuery.data.recommendedQuery?.sql
     ) {
       setEditorSql(summaryQuery.data.recommendedQuery.sql);
       appliedRecommendedQuery.current = true;
@@ -109,9 +109,9 @@ export function LabWorkspaceClient({ lab }: LabWorkspaceClientProps) {
 
   const datasetIdentity = useMemo(
     () => ({
-      family: summaryQuery.data?.dataset.family ?? baseDataset.family,
+      family: summaryQuery.data?.dataset?.family ?? baseDataset.family,
       tier: selectedTier,
-      ...(summaryQuery.data?.dataset.version
+      ...(summaryQuery.data?.dataset?.version
         ? { version: summaryQuery.data.dataset.version }
         : "version" in baseDataset && baseDataset.version
           ? { version: baseDataset.version }
@@ -424,7 +424,7 @@ export function LabWorkspaceClient({ lab }: LabWorkspaceClientProps) {
       title: summaryQuery.data.title || lab.title,
       objective: summaryQuery.data.learningGoal || lab.objective,
       theory: summaryQuery.data.theory || lab.theory,
-      defaultQuery: summaryQuery.data.recommendedQuery.sql || lab.defaultQuery,
+      defaultQuery: summaryQuery.data.recommendedQuery?.sql || lab.defaultQuery,
     };
   }, [lab, summaryQuery.data]);
 

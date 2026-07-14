@@ -1,5 +1,6 @@
 import {
   parseJsonArray,
+  parseOptionalJsonObject,
   parseTierList,
 } from "@/features/lab-flow-admin/utils/parse-form-json";
 import type {
@@ -12,36 +13,47 @@ import type {
   GuidedStepFormValues,
 } from "@/features/lab-flow-admin/schemas/lab-flow-admin-schema";
 import { labGuidedStepPayloadSchema } from "@/features/lab-flow-admin/schemas/lab-flow-admin-schema";
+import type { ReactScenarioPayload } from "@/shared/labs/lab-summary";
 
 export function curriculumFormToCreateRequest(
   values: CurriculumFormValues,
 ): CreateLabCurriculumRequest {
+  const recommendedSql = values.recommendedQuerySql?.trim() ?? "";
+  const datasetFamily = values.datasetFamily?.trim() ?? "";
+
   return {
     learningGoal: values.learningGoal.trim(),
     theory: values.theory.trim(),
-    recommendedQuery: {
-      sql: values.recommendedQuerySql.trim(),
-      description: values.recommendedQueryDescription.trim(),
-      exampleParameters: parseJsonArray(
-        values.recommendedQueryExampleParameters,
-        "example parameters",
-      ),
-      paramHints: parseJsonArray(
-        values.recommendedQueryParamHints,
-        "param hints",
-      ).map(String),
-    },
+    recommendedQuery: recommendedSql
+      ? {
+          sql: recommendedSql,
+          description: values.recommendedQueryDescription?.trim() ?? "",
+          exampleParameters: parseJsonArray(
+            values.recommendedQueryExampleParameters ?? "[]",
+            "example parameters",
+          ),
+          paramHints: parseJsonArray(
+            values.recommendedQueryParamHints ?? "[]",
+            "param hints",
+          ).map(String),
+        }
+      : null,
     recommendedCreateIndexSql: values.recommendedCreateIndexSql?.trim()
       ? values.recommendedCreateIndexSql.trim()
       : null,
     recommendedDropIndexSql: values.recommendedDropIndexSql?.trim()
       ? values.recommendedDropIndexSql.trim()
       : null,
-    dataset: {
-      family: values.datasetFamily.trim(),
-      version: values.datasetVersion.trim(),
-      recommendedTier: parseTierList(values.datasetRecommendedTier),
-    },
+    dataset: datasetFamily
+      ? {
+          family: datasetFamily,
+          version: values.datasetVersion?.trim() || "1",
+          recommendedTier: parseTierList(
+            values.datasetRecommendedTier?.trim() || "small",
+          ),
+        }
+      : null,
+    config: parseOptionalJsonObject(values.configJson, "config"),
     quizRequired: values.quizRequired === "true",
     optionalBenchmarkNote: values.optionalBenchmarkNote?.trim()
       ? values.optionalBenchmarkNote.trim()
@@ -100,6 +112,32 @@ export function guidedStepFormToPayload(
     }
 
     return labGuidedStepPayloadSchema.parse({ sql });
+  }
+
+  if (
+    values.action === "render_component" ||
+    values.action === "update_props" ||
+    values.action === "update_state" ||
+    values.action === "remount" ||
+    values.action === "toggle_memo" ||
+    values.action === "compare_reconciliation" ||
+    values.action === "inspect_hooks"
+  ) {
+    const raw = values.payloadReactScenarioJson?.trim() ?? "";
+    if (!raw) {
+      return null;
+    }
+
+    const reactScenario = parseOptionalJsonObject(
+      raw,
+      "react scenario",
+    ) as ReactScenarioPayload | null;
+
+    if (!reactScenario) {
+      return null;
+    }
+
+    return labGuidedStepPayloadSchema.parse({ reactScenario });
   }
 
   return null;

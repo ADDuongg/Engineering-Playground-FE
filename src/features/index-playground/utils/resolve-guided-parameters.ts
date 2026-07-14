@@ -19,18 +19,24 @@ function collectGuidedSqlCandidates(
   }
 
   // Legacy top-level fallback for older clients / partial payloads
-  candidates.push({
-    sql: summary.recommendedQuery.sql,
-    parameters: summary.recommendedQuery.exampleParameters,
-  });
-  candidates.push({
-    sql: summary.recommendedCreateIndexSql,
-    parameters: [],
-  });
-  candidates.push({
-    sql: summary.recommendedDropIndexSql,
-    parameters: [],
-  });
+  if (summary.recommendedQuery?.sql) {
+    candidates.push({
+      sql: summary.recommendedQuery.sql,
+      parameters: summary.recommendedQuery.exampleParameters,
+    });
+  }
+  if (summary.recommendedCreateIndexSql) {
+    candidates.push({
+      sql: summary.recommendedCreateIndexSql,
+      parameters: [],
+    });
+  }
+  if (summary.recommendedDropIndexSql) {
+    candidates.push({
+      sql: summary.recommendedDropIndexSql,
+      parameters: [],
+    });
+  }
 
   return candidates;
 }
@@ -96,16 +102,25 @@ export function resolveApplySqlFromSummaryStep(
     case "run_sql":
     case "run_explain":
     case "run_explain_analyze":
+      if (!summary.recommendedQuery?.sql) {
+        return null;
+      }
       return {
         sql: summary.recommendedQuery.sql,
         parameters: summary.recommendedQuery.exampleParameters,
       };
     case "create_index_sql":
+      if (!summary.recommendedCreateIndexSql) {
+        return null;
+      }
       return {
         sql: summary.recommendedCreateIndexSql,
         parameters: [],
       };
     case "drop_index_sql":
+      if (!summary.recommendedDropIndexSql) {
+        return null;
+      }
       return {
         sql: summary.recommendedDropIndexSql,
         parameters: [],

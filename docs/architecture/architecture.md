@@ -89,6 +89,7 @@ features/<name>/
 | `settings` | User preferences |
 | `admin-authz` | Admin session probe + route guard |
 | `user-admin` | Admin user directory + role changes |
+| `react-sandbox-runtime` | Headless React experiment client (`POST /experiments/react/run`) |
 
 **Rule:** Adding a new lab module only requires a new folder under `features/labs/<slug>/` and a registration call. No changes to `lab-engine` or routing.
 

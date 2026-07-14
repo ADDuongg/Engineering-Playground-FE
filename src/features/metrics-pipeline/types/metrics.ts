@@ -4,6 +4,14 @@ export type MetricRunType = "execution" | "explain" | "benchmark";
 
 export type MetricErrorCode = "VALIDATION_ERROR" | "NOT_FOUND";
 
+/** Open registry keys from Track Registry `metricCatalogId` (008). */
+export const KNOWN_METRIC_CATALOG_IDS = [
+  "database-metrics",
+  "react-metrics",
+] as const;
+
+export type KnownMetricCatalogId = (typeof KNOWN_METRIC_CATALOG_IDS)[number];
+
 export interface MetricContract {
   key: string;
   label: string;

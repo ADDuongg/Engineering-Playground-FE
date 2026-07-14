@@ -1,14 +1,24 @@
 import { z } from "zod";
 
 export const labGuidedStepActionSchema = z.enum([
+  // Database / SQL track
   "run_sql",
   "run_explain",
   "run_explain_analyze",
   "create_index_sql",
   "drop_index_sql",
+  "optional_benchmark",
+  // Frontend React track
+  "render_component",
+  "update_props",
+  "update_state",
+  "remount",
+  "toggle_memo",
+  "compare_reconciliation",
+  "inspect_hooks",
+  // Track-agnostic
   "compare_metrics",
   "take_quiz",
-  "optional_benchmark",
 ]);
 
 export const guidedSqlSchema = z.object({
@@ -18,10 +28,24 @@ export const guidedSqlSchema = z.object({
   description: z.string(),
 });
 
-export const labGuidedStepPayloadSchema = z.object({
-  recommendedQuery: guidedSqlSchema.optional(),
-  sql: z.string().min(1).optional(),
-});
+export const reactScenarioPayloadSchema = z
+  .object({
+    scenarioId: z.string().optional(),
+    componentSource: z.string().optional(),
+    props: z.record(z.string(), z.unknown()).optional(),
+    interactions: z.array(z.unknown()).optional(),
+    options: z.record(z.string(), z.unknown()).optional(),
+    description: z.string().optional(),
+  })
+  .passthrough();
+
+export const labGuidedStepPayloadSchema = z
+  .object({
+    recommendedQuery: guidedSqlSchema.optional(),
+    sql: z.string().min(1).optional(),
+    reactScenario: reactScenarioPayloadSchema.optional(),
+  })
+  .passthrough();
 
 export const labSummaryDatasetHintSchema = z.object({
   family: z.string().min(1, "Dataset family is required"),
@@ -52,31 +76,44 @@ export const adminLabCurriculumViewSchema = z.object({
   labSlug: z.string(),
   learningGoal: z.string(),
   theory: z.string(),
-  recommendedQuery: guidedSqlSchema,
+  recommendedQuery: guidedSqlSchema.nullable(),
   recommendedCreateIndexSql: z.string().nullable(),
   recommendedDropIndexSql: z.string().nullable(),
-  dataset: labSummaryDatasetHintSchema,
+  dataset: labSummaryDatasetHintSchema.nullable(),
+  config: z.record(z.string(), z.unknown()).nullable(),
   quizRequired: z.boolean(),
   optionalBenchmarkNote: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
 
+/** Curriculum form — SQL/dataset optional for non-SQL tracks (omit → null). */
 export const curriculumFormSchema = z.object({
   learningGoal: z.string().min(1, "Learning goal is required"),
   theory: z.string().min(1, "Theory is required"),
-  recommendedQuerySql: z.string().min(1, "Recommended SQL is required"),
-  recommendedQueryDescription: z.string(),
-  recommendedQueryExampleParameters: z.string(),
-  recommendedQueryParamHints: z.string(),
+  recommendedQuerySql: z.string().optional(),
+  recommendedQueryDescription: z.string().optional(),
+  recommendedQueryExampleParameters: z.string().optional(),
+  recommendedQueryParamHints: z.string().optional(),
   recommendedCreateIndexSql: z.string().optional(),
   recommendedDropIndexSql: z.string().optional(),
-  datasetFamily: z.string().min(1, "Dataset family is required"),
-  datasetVersion: z.string().min(1, "Dataset version is required"),
-  datasetRecommendedTier: z.string().min(1, "Recommended tiers are required"),
+  datasetFamily: z.string().optional(),
+  datasetVersion: z.string().optional(),
+  datasetRecommendedTier: z.string().optional(),
+  configJson: z.string().optional(),
   quizRequired: z.enum(["true", "false"]),
   optionalBenchmarkNote: z.string().optional(),
 });
+
+const REACT_GUIDED_ACTIONS = new Set([
+  "render_component",
+  "update_props",
+  "update_state",
+  "remount",
+  "toggle_memo",
+  "compare_reconciliation",
+  "inspect_hooks",
+]);
 
 export const guidedStepFormSchema = z
   .object({
@@ -91,6 +128,8 @@ export const guidedStepFormSchema = z
     payloadRecommendedDescription: z.string().optional(),
     payloadRecommendedExampleParameters: z.string().optional(),
     payloadRecommendedParamHints: z.string().optional(),
+    /** React scenario JSON for React-track actions */
+    payloadReactScenarioJson: z.string().optional(),
   })
   .superRefine((value, ctx) => {
     const needsRecommendedQuery =
@@ -99,6 +138,7 @@ export const guidedStepFormSchema = z
       value.action === "run_explain_analyze";
     const needsDdlSql =
       value.action === "create_index_sql" || value.action === "drop_index_sql";
+    const needsReactScenario = REACT_GUIDED_ACTIONS.has(value.action);
 
     if (needsRecommendedQuery && !value.payloadRecommendedSql?.trim()) {
       ctx.addIssue({
@@ -113,6 +153,14 @@ export const guidedStepFormSchema = z
         code: z.ZodIssueCode.custom,
         message: "DDL SQL is required for this action",
         path: ["payloadSql"],
+      });
+    }
+
+    if (needsReactScenario && !value.payloadReactScenarioJson?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "React scenario JSON is required for this action",
+        path: ["payloadReactScenarioJson"],
       });
     }
   });

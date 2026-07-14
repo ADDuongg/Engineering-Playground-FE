@@ -1,18 +1,28 @@
 import { z } from "zod";
 
 export const labGuidedStepActionSchema = z.enum([
+  // Database / SQL track
   "run_sql",
   "run_explain",
   "run_explain_analyze",
   "create_index_sql",
   "drop_index_sql",
+  "optional_benchmark",
+  // Frontend React track
+  "render_component",
+  "update_props",
+  "update_state",
+  "remount",
+  "toggle_memo",
+  "compare_reconciliation",
+  "inspect_hooks",
+  // Track-agnostic
   "compare_metrics",
   "take_quiz",
-  "optional_benchmark",
 ]);
 
 export const guidedSqlSchema = z.object({
-  sql: z.string().min(1),
+  sql: z.string(),
   exampleParameters: z.array(z.unknown()),
   paramHints: z.array(z.string()),
   description: z.string(),
@@ -20,10 +30,24 @@ export const guidedSqlSchema = z.object({
 
 export const labRecommendedQuerySchema = guidedSqlSchema;
 
-export const labGuidedStepPayloadSchema = z.object({
-  recommendedQuery: guidedSqlSchema.optional(),
-  sql: z.string().min(1).optional(),
-});
+export const reactScenarioPayloadSchema = z
+  .object({
+    scenarioId: z.string().optional(),
+    componentSource: z.string().optional(),
+    props: z.record(z.string(), z.unknown()).optional(),
+    interactions: z.array(z.unknown()).optional(),
+    options: z.record(z.string(), z.unknown()).optional(),
+    description: z.string().optional(),
+  })
+  .passthrough();
+
+export const labGuidedStepPayloadSchema = z
+  .object({
+    recommendedQuery: guidedSqlSchema.optional(),
+    sql: z.string().min(1).optional(),
+    reactScenario: reactScenarioPayloadSchema.optional(),
+  })
+  .passthrough();
 
 export const labGuidedStepSchema = z.object({
   order: z.number(),
@@ -47,9 +71,10 @@ export const labSummaryResponseSchema = z.object({
   theory: z.string().min(1),
   guidedSteps: z.array(labGuidedStepSchema),
   recommendedQuery: guidedSqlSchema,
-  recommendedCreateIndexSql: z.string().min(1),
-  recommendedDropIndexSql: z.string().min(1),
+  recommendedCreateIndexSql: z.string(),
+  recommendedDropIndexSql: z.string(),
   quizRequired: z.boolean(),
-  dataset: labSummaryDatasetSchema,
+  dataset: labSummaryDatasetSchema.nullable().optional(),
+  config: z.record(z.string(), z.unknown()).nullable().optional(),
   optionalBenchmarkNote: z.string().nullable().optional(),
 });

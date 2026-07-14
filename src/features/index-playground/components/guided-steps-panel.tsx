@@ -38,6 +38,20 @@ function actionLabel(action: LabGuidedStepAction): string {
       return "Quiz";
     case "optional_benchmark":
       return "Benchmark";
+    case "render_component":
+      return "Render";
+    case "update_props":
+      return "Update props";
+    case "update_state":
+      return "Update state";
+    case "remount":
+      return "Remount";
+    case "toggle_memo":
+      return "Toggle memo";
+    case "compare_reconciliation":
+      return "Reconciliation";
+    case "inspect_hooks":
+      return "Inspect hooks";
     default:
       return action;
   }
@@ -185,35 +199,37 @@ export function GuidedStepsPanel({
         </p>
       ) : null}
 
-      <div className="space-y-1 rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground">
-        <p className="font-medium text-foreground">
-          Recommended query (compatibility)
-        </p>
-        <p>{summary.recommendedQuery.description}</p>
-        {summary.recommendedQuery.paramHints.length > 0 && (
-          <p>Hints: {summary.recommendedQuery.paramHints.join(", ")}</p>
-        )}
-        {summary.recommendedQuery.exampleParameters.length > 0 && (
-          <p className="font-mono">
-            Bound params:{" "}
-            {JSON.stringify(summary.recommendedQuery.exampleParameters)}
+      {summary.recommendedQuery?.sql ? (
+        <div className="space-y-1 rounded-md border border-dashed border-border p-3 text-xs text-muted-foreground">
+          <p className="font-medium text-foreground">
+            Recommended query (compatibility)
           </p>
-        )}
-        <p className="text-[11px]">
-          Prefer per-step Apply buttons above. Keep{" "}
-          <code className="font-mono">$1</code> in SQL — parameters are sent
-          separately on Run.
-        </p>
-        <Button
-          type="button"
-          size="sm"
-          variant="secondary"
-          className="mt-2"
-          onClick={() => onApplySql(summary.recommendedQuery.sql)}
-        >
-          Apply recommended query
-        </Button>
-      </div>
+          <p>{summary.recommendedQuery.description}</p>
+          {summary.recommendedQuery.paramHints.length > 0 && (
+            <p>Hints: {summary.recommendedQuery.paramHints.join(", ")}</p>
+          )}
+          {summary.recommendedQuery.exampleParameters.length > 0 && (
+            <p className="font-mono">
+              Bound params:{" "}
+              {JSON.stringify(summary.recommendedQuery.exampleParameters)}
+            </p>
+          )}
+          <p className="text-[11px]">
+            Prefer per-step Apply buttons above. Keep{" "}
+            <code className="font-mono">$1</code> in SQL — parameters are sent
+            separately on Run.
+          </p>
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            className="mt-2"
+            onClick={() => onApplySql(summary.recommendedQuery.sql)}
+          >
+            Apply recommended query
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 }

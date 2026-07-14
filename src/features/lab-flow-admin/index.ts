@@ -28,6 +28,7 @@ export type {
   AdminLabGuidedStepView,
   CreateLabCurriculumRequest,
   CreateLabGuidedStepRequest,
+  ReactScenarioPayload,
   UpdateLabCurriculumRequest,
   UpdateLabGuidedStepRequest,
 } from "@/features/lab-flow-admin/types/lab-flow-admin";

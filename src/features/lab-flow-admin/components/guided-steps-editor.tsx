@@ -211,6 +211,14 @@ export function GuidedStepsEditor({ labSlug }: GuidedStepsEditorProps) {
                       payload.sql: {step.payload.sql}
                     </p>
                   ) : null}
+                  {step.payload?.reactScenario ? (
+                    <p className="mt-2 font-mono text-[11px] text-muted-foreground line-clamp-1">
+                      payload.reactScenario:{" "}
+                      {step.payload.reactScenario.scenarioId ??
+                        step.payload.reactScenario.description ??
+                        "configured"}
+                    </p>
+                  ) : null}
                 </div>
                 <div className="flex flex-wrap gap-1">
                   <Button

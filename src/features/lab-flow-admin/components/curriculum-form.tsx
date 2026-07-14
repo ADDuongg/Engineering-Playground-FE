@@ -31,6 +31,7 @@ function curriculumToFormValues(
       datasetFamily: "",
       datasetVersion: "",
       datasetRecommendedTier: "small, medium",
+      configJson: "",
       quizRequired: "false",
       optionalBenchmarkNote: "",
     };
@@ -39,23 +40,27 @@ function curriculumToFormValues(
   return {
     learningGoal: curriculum.learningGoal,
     theory: curriculum.theory,
-    recommendedQuerySql: curriculum.recommendedQuery.sql,
-    recommendedQueryDescription: curriculum.recommendedQuery.description,
+    recommendedQuerySql: curriculum.recommendedQuery?.sql ?? "",
+    recommendedQueryDescription: curriculum.recommendedQuery?.description ?? "",
     recommendedQueryExampleParameters: JSON.stringify(
-      curriculum.recommendedQuery.exampleParameters,
+      curriculum.recommendedQuery?.exampleParameters ?? [],
       null,
       2,
     ),
     recommendedQueryParamHints: JSON.stringify(
-      curriculum.recommendedQuery.paramHints,
+      curriculum.recommendedQuery?.paramHints ?? [],
       null,
       2,
     ),
     recommendedCreateIndexSql: curriculum.recommendedCreateIndexSql ?? "",
     recommendedDropIndexSql: curriculum.recommendedDropIndexSql ?? "",
-    datasetFamily: curriculum.dataset.family,
-    datasetVersion: curriculum.dataset.version,
-    datasetRecommendedTier: curriculum.dataset.recommendedTier.join(", "),
+    datasetFamily: curriculum.dataset?.family ?? "",
+    datasetVersion: curriculum.dataset?.version ?? "",
+    datasetRecommendedTier:
+      curriculum.dataset?.recommendedTier.join(", ") ?? "small, medium",
+    configJson: curriculum.config
+      ? JSON.stringify(curriculum.config, null, 2)
+      : "",
     quizRequired: curriculum.quizRequired ? "true" : "false",
     optionalBenchmarkNote: curriculum.optionalBenchmarkNote ?? "",
   };
@@ -105,10 +110,17 @@ export function CurriculumForm({
         />
       </AdminFormField>
 
+      <p className="text-xs text-muted-foreground">
+        SQL / dataset fields are Database track only — leave empty for React
+        (and other non-SQL) labs; content goes in guided step{" "}
+        <code className="font-mono">payload.reactScenario</code>.
+      </p>
+
       <AdminFormField
         label="Recommended query SQL"
         htmlFor="recommendedQuerySql"
         error={errors.recommendedQuerySql?.message}
+        hint="Optional for non-SQL tracks"
       >
         <AdminTextarea
           id="recommendedQuerySql"
@@ -189,6 +201,7 @@ export function CurriculumForm({
           label="Dataset family"
           htmlFor="datasetFamily"
           error={errors.datasetFamily?.message}
+          hint="Optional for non-SQL tracks"
         >
           <Input id="datasetFamily" {...register("datasetFamily")} />
         </AdminFormField>
@@ -214,6 +227,20 @@ export function CurriculumForm({
           />
         </AdminFormField>
       </div>
+
+      <AdminFormField
+        label="Lab config (JSON object)"
+        htmlFor="configJson"
+        error={errors.configJson?.message}
+        hint="Optional per-track metadata — leave empty for null"
+      >
+        <AdminTextarea
+          id="configJson"
+          className="min-h-24 font-mono text-xs"
+          placeholder="{}"
+          {...register("configJson")}
+        />
+      </AdminFormField>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <AdminFormField
